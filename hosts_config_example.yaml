@@ -1,0 +1,75 @@
+- default:
+      resources:
+          - path: /system/resource
+            interval: 30
+            tags:
+                  - board-name
+                  - disabled
+            values:
+                  - cpu-load
+          - path: /routing/bgp/peer
+            interval: 120
+            tags:
+                  - remote-as
+                  - name
+                  - disabled
+                  - comment
+                  - established
+                  - address-families
+                  - instance
+            values:
+                  - state
+            values_transform:
+                  - state:
+                          established: 4i
+                          active: 3i
+                          opensent: 2i
+                          openconfirm: 2i
+                          idle: 1i
+                          default: 0i
+                          missing: -1i
+                          rename: status
+- router1.example.com:
+      resources:
+          - path: /interface/ethernet
+            interval: 15
+            tags:
+                - name
+                - speed
+                - disabled
+            values:
+                - rx-bytes
+                - tx-bytes
+- router2.example.com:
+      resources:
+          -   path: /interface/ethernet
+              interval: 15
+              tags:
+                  - name
+                  - speed
+                  - disabled
+              values:
+                  - rx-bytes
+                  - tx-bytes
+- router3.example.com:
+      resources:
+          -   path: /interface/ethernet
+              interval: 15
+              tags:
+                  - name
+                  - speed
+                  - disabled
+              values:
+                  - rx-bytes
+                  - tx-bytes
+- router4.example.com:
+      resources:
+          -   path: /interface/ethernet
+              interval: 15
+              tags:
+                  - name
+                  - speed
+                  - disabled
+              values:
+                  - rx-bytes
+                  - tx-bytes
