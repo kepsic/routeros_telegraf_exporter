@@ -13,7 +13,7 @@ with open(os.path.join(here,'README.rst')) as readme_file:
 with open(os.path.join(here, 'HISTORY.rst')) as history_file:
     history = history_file.read()
 
-with open(os.path.join(here, 'requirements.txt')) as requirements_file:
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')) as requirements_file:
     requirements = requirements_file.readlines()
 
 setup_requirements = [ ]
