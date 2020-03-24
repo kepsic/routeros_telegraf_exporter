@@ -20,6 +20,7 @@ To use RouterOS Telegraf metrics exporter you have following options:
     $ export ROUTEROS_API_PASSWORD=mysecretapiuserpassword
     $ pserve config.ini
 
+::
    influx.conf for web service::
 
     [[inputs.http]]
@@ -38,6 +39,7 @@ To use RouterOS Telegraf metrics exporter you have following options:
     $ export ROUTEROS_API_PASSWORD=mysecretapiuserpassword
     $ rte --hosts-config-file hosts_config.yaml -D --logfile /var/mymetrics.out
 
+::
    influx.conf for daemon mode::
 
     # Stream a log file, like the tail -f command
@@ -72,6 +74,7 @@ To use RouterOS Telegraf metrics exporter you have following options:
     $ export ROUTEROS_API_USERNAME=api_read_user;
     $ export ROUTEROS_API_PASSWORD=mysecretapiuserpassword
     $ rte --hosts-config-file hosts_config.yaml -i
+::
    influx.conf for interactive mode::
 
     [[inputs.exec]]
