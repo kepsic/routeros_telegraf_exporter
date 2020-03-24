@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 
 """The setup script."""
+import os
 
 from setuptools import setup, find_packages
 
-with open('README.rst') as readme_file:
+here = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(here,'README.rst')) as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open(os.path.join(here, 'HISTORY.rst')) as history_file:
     history = history_file.read()
 
-requirements = [ 'venusian', 
-                 'simplejson', 
-                 'pyramid',
-                 'cornice',
-                 'waitress',
-                 'routeros_api',
-                 'pyyaml'
-                 ]
+with open(os.path.join(here, 'requirements.txt')) as requirements_file:
+    requirements = requirements_file.readlines()
 
 setup_requirements = [ ]
 

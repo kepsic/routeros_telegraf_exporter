@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'RouterOS to Telegraf metrics exporter'
+project = 'RouterOS Telegraf metrics exporter'
 copyright = "2020, Andres Kepler"
 author = "Andres Kepler"
 

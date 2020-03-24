@@ -5,10 +5,8 @@
 
 import unittest
 
-from routeros_telegraf_exporter import routeros_telegraf_exporter
 
-
-class TestRouteros_to_telegraf_metrics_exporter(unittest.TestCase):
+class TestRouteros_telegraf_exporter(unittest.TestCase):
     """Tests for `routeros_telegraf_exporter` package."""
 
     def setUp(self):
