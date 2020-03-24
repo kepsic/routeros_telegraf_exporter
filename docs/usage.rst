@@ -2,7 +2,16 @@
 Usage
 =====
 
-To use RouterOS Telegraf metrics exporter you have two options
+To begin, create a new directory and environment::
+
+    $ mkdir rte
+    $ cd rte
+    $ python3 -m venv ./
+    $ pip install routeros_telegraf_exporter
+    $ curl https://raw.githubusercontent.com/kepsic/routeros_telegraf_exporter/master/example_config.ini -o config.ini
+    $ curl https://raw.githubusercontent.com/kepsic/routeros_telegraf_exporter/master/hosts_config_example.yaml -o hosts_config.yaml
+
+To use RouterOS Telegraf metrics exporter you have following options
 
 - Web service::
 
@@ -21,13 +30,13 @@ influx.conf for web service::
     interval = "60s"
     timeout="30s"
 
-
--    Run in daemon mode::
+- Run in daemon mode::
 
     $ export ROUTEROS_EXPORTER_PATH=$(pwd);
     $ export ROUTEROS_API_USERNAME=api_read_user;
     $ export ROUTEROS_API_PASSWORD=mysecretapiuserpassword
     $ rte --hosts-config-file hosts_config.yaml -D --logfile /var/mymetrics.out
+
 influx.conf for daemon mode::
 
     # Stream a log file, like the tail -f command
