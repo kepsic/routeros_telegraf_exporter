@@ -6,20 +6,26 @@ Abstraction layer for models
 import os
 import threading
 from datetime import datetime
+
+import yaml
 from yaml import load
 
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
-    from yaml import Loader, Dumper
+    from yaml import Loader
 
 
 def load_config(config_file):
     here = os.path.abspath(os.path.dirname(__file__))
     config_file = "{}/{}".format(os.environ.get("ROUTEROS_EXPORTER_PATH", here), config_file)
-    with open(config_file) as file:
-        data = load(file, Loader=Loader)
-        return data
+    try:
+        with open(config_file) as file:
+            data = load(file, Loader=Loader)
+            return data
+    except FileNotFoundError:
+        from routeros_telegraf_exporter import DEFAULT_CONF
+        return load(DEFAULT_CONF, Loader=Loader)
 
 
 def load_hosts_from_config(config):

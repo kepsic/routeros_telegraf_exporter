@@ -14,14 +14,13 @@ Examples:
 import argparse
 import logging
 import os
-import sys
 
 
 from threading import Thread
 
 from queue import Queue
 
-from routeros_telegraf_exporter import format_values_to_str
+from .utils import format_values_to_str
 from .models import load_config, load_hosts_from_config
 from .routeros_exporter import worker
 
@@ -61,7 +60,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(args=parse_args()):
+def cli_main(args=parse_args()):
     configure_logging(args)
     if args.hosts_config_file:
         args.hosts_config = load_config(args.hosts_config_file)
@@ -92,6 +91,5 @@ def print_values(args, q):
     elif args.output_type == "json":
         logging.info(values)
 
-
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    pass  # pragma: no cover

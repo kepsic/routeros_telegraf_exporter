@@ -9,7 +9,6 @@ Example:
 import argparse
 import logging
 import os
-import sys
 
 import routeros_api
 
@@ -20,10 +19,9 @@ logging.basicConfig(level=logging.DEBUG,
 
 
 def main():
-    """ Main probe function
+    """Main probe function
     Returns:
-        int: 0 if ok, 100 if fail
-
+    int: 0 if ok, 100 if fail
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--user", dest="user", default=os.getenv("ROUTEROS_API_USERNAME", 'api_read_user'))
@@ -46,6 +44,5 @@ def main():
         return 100
     return 0
 
-
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    pass  # pragma: no cover

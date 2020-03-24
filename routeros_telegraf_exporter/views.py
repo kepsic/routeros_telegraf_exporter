@@ -6,7 +6,7 @@ from threading import Thread
 
 from cornice import Service
 
-from . import format_values_to_str
+from .utils import format_values_to_str
 from .routeros_exporter import worker
 from .models import Args
 
@@ -25,7 +25,7 @@ qworker.start()
 def get_metrics(request):
     """Returns JSON or influx formatted string
     Args:
-        request: Pylon requests object
+    request: Pylon requests object
     """
     global output_type
     values = []

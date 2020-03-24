@@ -1,5 +1,5 @@
 =====================================
-RouterOS to Telegraf metrics exporter
+RouterOS Telegraf metrics exporter
 =====================================
 
 

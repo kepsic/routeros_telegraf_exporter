@@ -1,5 +1,5 @@
 Welcome to RouterOS to Telegraf metrics exporter's documentation!
-======================================
+=================================================================
 
 .. toctree::
    :maxdepth: 2

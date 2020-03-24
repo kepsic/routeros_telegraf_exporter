@@ -8,8 +8,8 @@ import time
 
 import routeros_api
 
-from routeros_telegraf_exporter import DEFAULT_MEASUREMNT, CONNECTIONS, \
-    format_value, format_tag
+from routeros_telegraf_exporter import DEFAULT_MEASUREMNT, CONNECTIONS
+from routeros_telegraf_exporter.utils import format_value, format_tag
 from routeros_telegraf_exporter.models import JsonData
 
 MEASUREMENT = os.environ.get("ROUTEROS_EXPORTER_MEASUREMENT", DEFAULT_MEASUREMNT)
@@ -29,6 +29,8 @@ def host_output(args):
         list: Multidimensional aggregated list
     """
     api = CONNECTIONS.get(args.host)
+    if not api:
+        return
     list_adress = api.get_resource(args.resource.get("path"))
     res = []
     tags_fields = args.resource.get("tags")
@@ -81,9 +83,10 @@ def host_output(args):
 def extract_default_resouces(args):
     """Helper function to extracts default resources from config file
     Args:
-        args (object): Arguments object
+    args (object): Arguments object
     Returns:
-        dict: Default section from config or None
+    dict: Default section from config or None
+
     """
     res = list(filter(lambda x: x.get("default"), args.hosts_config))
     if res:
@@ -104,16 +107,25 @@ def get_connections(args):
     Args:
         args (object): Arguments object
     """
+    if not args.hosts:
+        raise RuntimeError("Missing hosts param")
     hosts = args.hosts.split(",")
     for host in hosts:
+        if host == "rte_default_gw":
+            return
         args.host = host
         connection = CONNECTIONS.get(args.host)
         if not connection:
-            CONNECTIONS[args.host] = routeros_api.RouterOsApiPool(args.host,
+            try:
+                CONNECTIONS[args.host] = routeros_api.RouterOsApiPool(args.host,
                                                                   port=args.port,
                                                                   username=args.user,
                                                                   password=args.password,
                                                                   plaintext_login=True).get_api()
+            except routeros_api.exceptions.RouterOsApiConnectionError as e:
+                logging.error("Unable to connect {}: {}".format(args.host, e))
+                pass
+
 
 
 def get_routers_data(args, hosts, q):
