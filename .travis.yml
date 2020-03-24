@@ -12,4 +12,4 @@ deploy:
   on:
     tags: true
     repo: kepsic/routeros_telegraf_exporter
-    python: 3.8
+    python: 3.7
