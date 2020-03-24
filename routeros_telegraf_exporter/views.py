@@ -6,6 +6,7 @@ from threading import Thread
 
 from cornice import Service
 
+from . import format_values_to_str
 from .routeros_exporter import worker
 from .models import Args
 
@@ -14,7 +15,7 @@ q = Queue()
 metrics = Service(name='metrics', path='/metrics', description="RouterOS metrics output", content_type="text/html",
                   renderer="string" if output_type == "influx" else "json")
 
-worker_args = Args(daemon=True, output=output_type)
+worker_args = Args(daemon=True, output_type=output_type)
 qworker = Thread(target=worker, args=(worker_args, q,))
 qworker.setDaemon(True)
 qworker.start()
@@ -22,7 +23,10 @@ qworker.start()
 
 @metrics.get()
 def get_metrics(request):
-    """Returns JSON or string"""
+    """Returns JSON or influx formatted string
+    Args:
+        request: Pylon requests object
+    """
     global output_type
     values = []
     params = request.params
@@ -35,11 +39,7 @@ def get_metrics(request):
         values.append(q.get())
     if output_type == "influx":
         if values:
-            v = []
-            for x in values:
-                for x2 in x:
-                    v.append(x2)
-            return "\n".join(v)
+            return format_values_to_str(values)
         else:
             return ""
     return values

@@ -11,6 +11,13 @@ DEFAULT_MEASUREMNT = "routerstat"
 CONNECTIONS = {}
 
 
+def format_values_to_str(values):
+    v = []
+    for x in values:
+        for x2 in x:
+            v.append(x2)
+    return "\n".join(v)
+
 def format_value(value_str):
     if re.match(r'^[-+]?([0-9]*\.[0-9]+)$', value_str):
         return float(value_str)

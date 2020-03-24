@@ -4,8 +4,6 @@ language: python
 python:
   - 3.8
   - 3.7
-  - 3.6
-  - 3.5
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -U tox-travis
@@ -20,9 +18,9 @@ script: tox
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
-  user: kepsic
+  user: "__token__"
   password:
-    secure: PLEASE_REPLACE_ME
+    secure: "nrH3qPRseTk/FkjVGENFJcYXViVn+9qkyVj12YK5iQMyW5wy7XynKNmPU659FoYk3o2ocl19KJu6KsGmxSkRitDqzGbbExori65dvT7o0TTyb91rW1R4EYBkeXoouwvUALlOdXoZLKrDtqg0EykapzCRam/WtT04wGz+2DC/GXUBEEKQ0G5cU3ZFqAboqrbWdAIU4h3bbiS/5EWof2QrHvnxAqvu8DMHoSfHUx4+VRkev+8i1w7dfj7yhjypbEkj65ZohgayZh+wzX8379OHFjBTZi+s/NvG7bFPKsuFBdVnxb8ksVM62wkRl6Kp09kc86FF9EDnqOyDMM1BL3nR0TGqrIBV9fqIbXzpJbCufXcff2eBTHiXv2VY/6/bb09PylFT3g2p2Qz1Uo221f74C/WhIqik3ZDSvOuR9ak4SITyCPavoTT0R6lMbzrEL56znBLLF4ypJqau2tYt1yqLX9ZAfauMgFSf+k2x9pDfA5XwjhE1fhj+dREAgwH8MNOA+UFqsveX+mgmJs5MRmPCAZWI2cXNNyTBkRJdWu5+dPRxqlK0EjWMO8e0CohU+7wyCPDGwRiYdnkv3NiOyMNb+qpEs3cVLaXeX4e+o4C2Dtz14W9mK8DqVQGbCQrUlh29Kvx8n3MuYWzIYUKMZPjK9CY2DLvocYzuymjLS8bRomU="
   on:
     tags: true
     repo: kepsic/routeros_telegraf_exporter

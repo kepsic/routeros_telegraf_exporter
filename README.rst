@@ -27,7 +27,7 @@ Features
 --------
 
 * metrics http service with influx inline protocol
-* cli utility
+* cli utilities: rte and rte_probe
 
 Credits
 -------

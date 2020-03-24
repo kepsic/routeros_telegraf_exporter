@@ -1,3 +1,8 @@
+""" Main RouterOS API aggregator
+
+This module is used to aggregate RouterOS API values into influx line protocol or JSON
+"""
+import logging
 import os
 import time
 
@@ -11,8 +16,18 @@ MEASUREMENT = os.environ.get("ROUTEROS_EXPORTER_MEASUREMENT", DEFAULT_MEASUREMNT
 EXPORT_OUTPUT_LINE = MEASUREMENT + ",{} {} {}"
 last_resouce_run_dict = {}
 
+log = logging.getLogger(__name__)
+
 
 def host_output(args):
+    """Aggregates RouterOS-API path into list
+
+    Args:
+        args (object): Parameters object
+
+    Returns:
+        list: Multidimensional aggregated list
+    """
     api = CONNECTIONS.get(args.host)
     list_adress = api.get_resource(args.resource.get("path"))
     res = []
@@ -47,12 +62,13 @@ def host_output(args):
                     transform_dict = transform_values[0].get(key)
                     default_value = transform_dict.get("default")
                     name = transform_dict.get("rename", key)
-                    extra_values.append((name, transform_dict.get(value, default_value)))
+                    value = transform_dict.get(value, default_value)
+                    extra_values.append((name, value))
 
         if extra_values and tag_values:
-            if args.output == "json":
+            if args.output_type == "json":
                 res.append(JsonData(measurement=MEASUREMENT, tags=dict(tag_values), fields=dict(extra_values)).__dict__)
-            elif args.output == "influx":
+            elif args.output_type == "influx":
                 res.append(
                     EXPORT_OUTPUT_LINE.format(','.join(list(map(lambda x: "{v[0]}={v[1]}".format(v=x), tag_values))),
                                               ','.join(list(map(lambda x: "{v[0]}={v[1]}".format(v=x), extra_values))),
@@ -63,6 +79,12 @@ def host_output(args):
 
 
 def extract_default_resouces(args):
+    """Helper function to extracts default resources from config file
+    Args:
+        args (object): Arguments object
+    Returns:
+        dict: Default section from config or None
+    """
     res = list(filter(lambda x: x.get("default"), args.hosts_config))
     if res:
         return res[0]['default']['resources']
@@ -70,11 +92,18 @@ def extract_default_resouces(args):
 
 
 def close_connections():
+    """Helper function for closing routeros connections
+    """
     for srv, connection in CONNECTIONS.items():
         connection.disconnect()
 
 
 def get_connections(args):
+    """Helper function for building connection pool for routers
+
+    Args:
+        args (object): Arguments object
+    """
     hosts = args.hosts.split(",")
     for host in hosts:
         args.host = host
@@ -87,14 +116,38 @@ def get_connections(args):
                                                                   plaintext_login=True).get_api()
 
 
-def get_routers_data(args, hosts, q, values):
+def get_routers_data(args, hosts, q):
+    """Iterates over hosts and returns aggregated values
+
+    Args:
+        args (object): Parameters object
+        hosts (str): Comma separated hosts
+        q (Queue): Queue object
+
+    Returns:
+        list: List of agregated routers values
+    """
+    routers_values = []
     for host in hosts:
-        get_router_data(args, host, q, values)
-    return values
+        router_value = get_router_data(args, host, q)
+        routers_values.append(router_value)
+    return routers_values
 
 
-def get_router_data(args, host, q, values):
+def get_router_data(args, host, q):
+    """Main RouterOS-API values aggregator
+
+    Args:
+        args (object): Arguments object
+        host (str): Host string
+        q (Queue): Queue object
+
+    Returns:
+        list: Agregated list of values
+
+    """
     global last_resouce_run_dict
+    router_values = []
     host_config = list(filter(lambda x: x.get(host), args.hosts_config))
     default_config_resources = extract_default_resouces(args)
     host_config = host_config[0][host]
@@ -104,30 +157,42 @@ def get_router_data(args, host, q, values):
     for resource in resources:
         args.host = host
         args.resource = resource
-        resource_path = resource.get("path")
-        resource_interval_millis = resource.get("interval", 60) * 1000
-        last_resource_run_key = "{}_{}".format(host.replace(".", "_"), resource_path.replace("/", "_"))
-        current_milli_sec = int(round(time.time() * 1000))
-        last_resouce_run_millis = last_resouce_run_dict.get(last_resource_run_key)
-        if not last_resouce_run_millis:
+        if not args.ignore_interval and not args.daemon:
+            resource_path = resource.get("path")
+            resource_interval_millis = resource.get("interval", 60) * 1000
+            last_resource_run_key = "{}_{}".format(host.replace(".", "_"), resource_path.replace("/", "_"))
+            current_milli_sec = int(round(time.time() * 1000))
+            last_resouce_run_millis = last_resouce_run_dict.get(last_resource_run_key)
+            if not last_resouce_run_millis:
+                last_resouce_run_dict[last_resource_run_key] = current_milli_sec
+                last_resouce_run_millis = current_milli_sec
+            if (current_milli_sec - last_resouce_run_millis) < resource_interval_millis:
+                continue
             last_resouce_run_dict[last_resource_run_key] = current_milli_sec
-            last_resouce_run_millis = current_milli_sec
-        if (current_milli_sec - last_resouce_run_millis) < resource_interval_millis:
-            continue
-        print("Exec", last_resource_run_key, current_milli_sec, last_resouce_run_millis, resource_interval_millis)
         values = host_output(args)
         if not q.full():
-            last_resouce_run_dict[last_resource_run_key] = current_milli_sec
             q.put(values)
-    return values
+        router_values.append(values)
+    return router_values
 
 
-def worker(args, q, sleep=True):
+def worker(args, q, daemon=True):
+    """Main worker for cli and web application
+
+    Args:
+        args (object): Arguments object
+        q (Queue): Queue object where the results is stored
+        daemon (bool): On True iterates endlessly
+
+    Returns:
+        list: Multidimensional list of agregated values
+
+    """
     get_connections(args)
     hosts = args.hosts.split(",")
     values = []
-    if not sleep:
-        values = get_routers_data(args, hosts, q, values)
-    while sleep:
-        values = get_routers_data(args, hosts, q, values)
+    if not daemon:
+        values = get_routers_data(args, hosts, q)
+    while daemon:
+        values = get_routers_data(args, hosts, q)
     return values

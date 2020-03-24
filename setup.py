@@ -40,7 +40,8 @@ setup(
     description="RouterOS metrics exporter enables metrics export to Telegraf",
     entry_points={
         'console_scripts': [
-            '{0}={0}.cli:main'.format(package_name),
+            'rte={0}.cli:main'.format(package_name),
+            'rte_probe={0}.probe_cli:main'.format(package_name),
         ],
         'paste.app_factory': [
             'main={0}:main'.format(package_name)

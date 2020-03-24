@@ -8,7 +8,7 @@ Installation
 Stable release
 --------------
 
-To install RouterOS to Telegraf metrics exporter, run this command in your terminal:
+To install RouterOS Telegraf metrics exporter, run this command in your terminal:
 
 .. code-block:: console
 

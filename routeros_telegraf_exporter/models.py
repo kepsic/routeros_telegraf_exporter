@@ -1,3 +1,8 @@
+"""Models module
+
+Abstraction layer for models
+"""
+
 import os
 import threading
 from datetime import datetime
@@ -9,12 +14,19 @@ except ImportError:
     from yaml import Loader, Dumper
 
 
-def load_hosts_config(config_file):
+def load_config(config_file):
     here = os.path.abspath(os.path.dirname(__file__))
     config_file = "{}/{}".format(os.environ.get("ROUTEROS_EXPORTER_PATH", here), config_file)
     with open(config_file) as file:
         data = load(file, Loader=Loader)
         return data
+
+
+def load_hosts_from_config(config):
+    hosts = list(map(lambda x: list(x.keys())[0], config))
+    if "default" in hosts:
+        hosts.remove("default")
+        return ",".join(hosts)
 
 
 class Args(object):
@@ -25,31 +37,29 @@ class Args(object):
     hosts = []
     sleep = 60
     resource = []
+    ignore_interval = False
 
     def __init__(self, user=os.getenv("ROUTEROS_API_USERNAME", 'api_read_user'),
                  password=os.getenv("ROUTEROS_API_PASSWORD", 'do_not_expose_password_here'),
                  port=os.getenv("ROUTEROS_API_PORT", 8728),
                  hosts=[],
                  daemon=False,
-                 output="influx",
+                 output_type="influx",
                  resource=[],
-                 hosts_config_file=os.getenv("ROUTEROS_EXPORTER_HOSTS_CONFIG", 'hosts_config.yaml')):
+                 hosts_config_file=os.getenv("ROUTEROS_EXPORTER_HOSTS_CONFIG", 'hosts_config.yaml'),
+                 ignore_interval=False):
         self.lock = threading.Lock()
         self.user = user
         self.password = password
         self.hosts = hosts
         self.port = port
         self.daemon = daemon
-        self.output = output
+        self.output_type = output_type
         self.resource = resource
-        self.hosts_config = load_hosts_config(hosts_config_file)
-
-    def load_hosts_from_config(self):
-        hosts = list(map(lambda x: list(x.keys())[0], self.hosts_config))
-        if "default" in hosts:
-            hosts.remove("default")
-            self.hosts = ",".join(hosts)
-
+        self.ignore_interval = ignore_interval
+        self.hosts_config = load_config(hosts_config_file)
+        if self.hosts_config:
+            self.hosts = load_hosts_from_config(self.hosts_config)
 
 class JsonData(object):
     time = None
