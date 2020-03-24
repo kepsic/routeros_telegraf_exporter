@@ -1,25 +1,14 @@
-# Config file for automatic testing at travis-ci.com
-
 language: python
 python:
-  - 3.7
-
-# Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+- 3.7
 install: pip install -U tox-travis
-
-# Command to run tests, e.g. python setup.py test
 script: tox
-
-# Assuming you have installed the travis-ci CLI tool, after you
-# create the Github repo and add it to Travis, run the
-# following command to finish PyPI deployment setup:
-# $ travis encrypt --add deploy.password
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
-  user: "__token__"
+  user: __token__
   password:
-    secure: "nrH3qPRseTk/FkjVGENFJcYXViVn+9qkyVj12YK5iQMyW5wy7XynKNmPU659FoYk3o2ocl19KJu6KsGmxSkRitDqzGbbExori65dvT7o0TTyb91rW1R4EYBkeXoouwvUALlOdXoZLKrDtqg0EykapzCRam/WtT04wGz+2DC/GXUBEEKQ0G5cU3ZFqAboqrbWdAIU4h3bbiS/5EWof2QrHvnxAqvu8DMHoSfHUx4+VRkev+8i1w7dfj7yhjypbEkj65ZohgayZh+wzX8379OHFjBTZi+s/NvG7bFPKsuFBdVnxb8ksVM62wkRl6Kp09kc86FF9EDnqOyDMM1BL3nR0TGqrIBV9fqIbXzpJbCufXcff2eBTHiXv2VY/6/bb09PylFT3g2p2Qz1Uo221f74C/WhIqik3ZDSvOuR9ak4SITyCPavoTT0R6lMbzrEL56znBLLF4ypJqau2tYt1yqLX9ZAfauMgFSf+k2x9pDfA5XwjhE1fhj+dREAgwH8MNOA+UFqsveX+mgmJs5MRmPCAZWI2cXNNyTBkRJdWu5+dPRxqlK0EjWMO8e0CohU+7wyCPDGwRiYdnkv3NiOyMNb+qpEs3cVLaXeX4e+o4C2Dtz14W9mK8DqVQGbCQrUlh29Kvx8n3MuYWzIYUKMZPjK9CY2DLvocYzuymjLS8bRomU="
+    secure: lmrT2LYTHcp//Xk5/V48LZ1y9KGEnjyeyYP9OtskGVpOBhnF+rUcfu2fJKF/JmP2lY19jwOlclJ8kSmHjfxhWmVQqEW42LDfBfiwRyiOn8EfejMbZW7UfmMNJCquOxqE/8VmMi4QXVGedc8AaD5Hb/PXbzivEsQDRaXVyGbAbyP8NRWcIZ0/LjFldP12cT7T6tJWqfgxlqGuH2BRiP+VpMUiQPutejO2+dMm2dD/XAzur2YLLgqNIdWqFJqRxG2XUHqzuToXTAyi8oj/YLrA6BTrFcxTKRejN4qt/fKHZmk7E8lbRoBRrvHxZhyZRdUTqfvYBXrbzF8kSfJYhYrzQYyZNyEPkh2l6KN7ikY56ZTr5h6sKTCJqIRGR/cZf1EclpTslhrQZ0MKpc4AyOycugKoGA2VpZcwfgsbbuMv+UER6swbWoXJ7bOL+OW80wInWwQa3JjmDW8xJb44HgTMZcQtpsNaDdC58BtIijJUEB7Vne1STU7leBvKtD/HU3G4uanc8QaKPoFvuntM+o1qauIstmmh1sFzZbXK2t2Q1t2RioFdd7rM5Zq7d6hz/3DQSxTvfq2npyw+SJCyJuIOyEwxM7BU7SZz24CoKyAWozEfm88sEL5BfMFzC1reL3RiV4aIZYvP0k9iBOUsN+SFaBBnyG+pHq7U6+BOUXI817o=
   on:
     tags: true
     repo: kepsic/routeros_telegraf_exporter
