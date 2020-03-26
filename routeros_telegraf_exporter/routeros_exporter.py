@@ -161,8 +161,10 @@ def get_router_data(args, host, q):
     global last_resouce_run_dict
     router_values = []
     host_config = list(filter(lambda x: x.get(host), args.hosts_config))
+    if not host_config:
+        return
     default_config_resources = extract_default_resouces(args)
-    host_config = host_config[0][host]
+    host_config = host_config[0].get(host)
     resources = host_config.get('resources')
     if default_config_resources:
         resources.extend(default_config_resources)

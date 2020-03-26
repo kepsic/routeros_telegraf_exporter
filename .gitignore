@@ -114,3 +114,4 @@ venv
 .venv
 
 hosts_config.yaml
+config.ini
