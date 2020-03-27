@@ -7,6 +7,7 @@ import os
 import time
 
 import routeros_api
+from routeros_api.exceptions import RouterOsApiConnectionError, RouterOsApiError
 
 from routeros_telegraf_exporter import DEFAULT_MEASUREMNT, CONNECTIONS
 from routeros_telegraf_exporter.utils import format_value, format_tag
@@ -42,7 +43,7 @@ def host_output(args):
     values_transform = args.resource.get("values_transform")
     try:
        values = list_adress.get()
-    except routeros_api.exceptions.RouterOsApiConnectionError as e:
+    except RouterOsApiError as e:
         log.debug(e)
         return
 
@@ -136,7 +137,7 @@ def get_connection(args):
                                                               username=args.user,
                                                               password=args.password,
                                                               plaintext_login=True)
-    except routeros_api.exceptions.RouterOsApiConnectionError as e:
+    except RouterOsApiConnectionError as e:
         logging.error("Unable to connect {}: {}".format(args.host, e))
     return connection
 
