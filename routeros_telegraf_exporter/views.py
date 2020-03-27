@@ -15,8 +15,9 @@ q = Queue()
 metrics = Service(name='metrics', path='/metrics', description="RouterOS metrics output", content_type="text/html",
                   renderer="string" if output_type == "influx" else "json")
 
-health = Service(name='health', path='/health/{router_name}', description="RouterOS health output", content_type="text/html",
-                  renderer="string" if output_type == "influx" else "json")
+health = Service(name='health', path='/health/{router_name}', description="RouterOS health output",
+                 content_type="text/html",
+                 renderer="string" if output_type == "influx" else "json")
 
 worker_args = Args(daemon=True, output_type=output_type)
 qworker = Thread(target=worker, args=(worker_args, q,))
@@ -32,11 +33,14 @@ def get_metrics(request):
     """
     global output_type
     values = []
+    direct = 0
     params = request.params
     if params.get("output_type"):
         output_type = params.get("output_type")
+    if params.get("direct"):
+        direct = int(params.get("direct"))
 
-    if q.empty():
+    if q.empty() and direct == 1:
         worker(worker_args, q, False)
     while not q.empty():
         values.append(q.get())
@@ -46,6 +50,7 @@ def get_metrics(request):
         else:
             return ""
     return values
+
 
 @health.get()
 def get_health(request):
@@ -74,4 +79,3 @@ def get_health(request):
     value = values[0][0][0]
 
     return value
-
