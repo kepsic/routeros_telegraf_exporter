@@ -40,8 +40,13 @@ def host_output(args):
     tags_fields = args.resource.get("tags")
     values_fields = args.resource.get("values")
     values_transform = args.resource.get("values_transform")
+    try:
+       values = list_adress.get()
+    except routeros_api.exceptions.RouterOsApiConnectionError as e:
+        log.debug(e)
+        return
 
-    for address in list_adress.get():
+    for address in values:
         extra_values = []
         tag_values = [("router_name", args.host)]
 
@@ -193,9 +198,10 @@ def get_router_data(args, host, q):
             last_resouce_run_dict[last_resource_run_key] = current_milli_sec
         values = host_output(args)
         log.debug(values)
-        if not q.full():
-            q.put(values)
-        router_values.append(values)
+        if values:
+            if not q.full():
+                q.put(values)
+            router_values.append(values)
     return router_values
 
 
