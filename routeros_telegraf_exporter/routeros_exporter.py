@@ -28,9 +28,13 @@ def host_output(args):
     Returns:
         list: Multidimensional aggregated list
     """
-    api = CONNECTIONS.get(args.host)
+    connection = CONNECTIONS.get(args.host)
+    if not connection:
+        return
+    api = connection.get_api()
     if not api:
         return
+
     list_adress = api.get_resource(args.resource.get("path"))
     res = []
     tags_fields = args.resource.get("tags")
@@ -116,16 +120,20 @@ def get_connections(args):
         args.host = host
         connection = CONNECTIONS.get(args.host)
         if not connection:
-            try:
-                CONNECTIONS[args.host] = routeros_api.RouterOsApiPool(args.host,
-                                                                  port=args.port,
-                                                                  username=args.user,
-                                                                  password=args.password,
-                                                                  plaintext_login=True).get_api()
-            except routeros_api.exceptions.RouterOsApiConnectionError as e:
-                logging.error("Unable to connect {}: {}".format(args.host, e))
-                pass
+            CONNECTIONS[args.host] = get_connection(args)
 
+
+def get_connection(args):
+    connection = None
+    try:
+        connection = routeros_api.RouterOsApiPool(args.host,
+                                                              port=args.port,
+                                                              username=args.user,
+                                                              password=args.password,
+                                                              plaintext_login=True)
+    except routeros_api.exceptions.RouterOsApiConnectionError as e:
+        logging.error("Unable to connect {}: {}".format(args.host, e))
+    return connection
 
 
 def get_routers_data(args, hosts, q):
