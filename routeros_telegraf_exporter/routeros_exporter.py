@@ -179,7 +179,7 @@ def get_router_data(args, host, q):
     for resource in resources:
         args.host = host
         args.resource = resource
-        if not args.ignore_interval and not args.daemon:
+        if not args.ignore_interval and args.daemon:
             resource_path = resource.get("path")
             resource_interval_millis = resource.get("interval", 60) * 1000
             last_resource_run_key = "{}_{}".format(host.replace(".", "_"), resource_path.replace("/", "_"))
@@ -192,6 +192,7 @@ def get_router_data(args, host, q):
                 continue
             last_resouce_run_dict[last_resource_run_key] = current_milli_sec
         values = host_output(args)
+        log.debug(values)
         if not q.full():
             q.put(values)
         router_values.append(values)

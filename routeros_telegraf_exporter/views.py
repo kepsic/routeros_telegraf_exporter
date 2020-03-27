@@ -7,7 +7,7 @@ from threading import Thread
 from cornice import Service
 
 from .utils import format_values_to_str
-from .routeros_exporter import worker, get_connections, get_router_data
+from .routeros_exporter import worker
 from .models import Args
 
 output_type = os.environ.get("ROUTEROS_EXPORTER_OUTPUT", "influx")
@@ -31,7 +31,7 @@ def get_metrics(request):
     Args:
     request: Pylon requests object
     """
-    global output_type
+    global output_type, q
     values = []
     direct = 0
     params = request.params
