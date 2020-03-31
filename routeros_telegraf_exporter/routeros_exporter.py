@@ -180,6 +180,8 @@ def get_router_data(args, host, q):
     default_config_resources = extract_default_resouces(args)
     host_config = host_config[0].get(host)
     resources = host_config.get('resources')
+    if not resources:
+        resources = []
     if default_config_resources:
         resources.extend(default_config_resources)
     for resource in resources:
