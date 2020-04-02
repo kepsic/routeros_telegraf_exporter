@@ -32,7 +32,12 @@ def host_output(args):
     connection = CONNECTIONS.get(args.host)
     if not connection:
         return
-    api = connection.get_api()
+    try:
+        api = connection.get_api()
+    except RouterOsApiError as e:
+        log.debug(e)
+        return
+
     if not api:
         return
 
